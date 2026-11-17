@@ -2,9 +2,12 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#14110e" />
     <title>Nauvoo — Spring 1842</title>
-    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect fill='%23c4a36a' width='16' height='16'/%3E%3C/svg%3E" />
+    <link rel="manifest" href="./manifest.webmanifest" />
+    <link rel="icon" href="./icons/icon-192.png" />
+    <link rel="apple-touch-icon" href="./icons/icon-192.png" />
     <style>
       html,
       body {
@@ -12,19 +15,79 @@
         height: 100%;
         background: #14110e;
         overflow: hidden;
+        overscroll-behavior: none;
+        -webkit-tap-highlight-color: transparent;
       }
-      #game {
+      #game,
+      #game canvas {
         width: 100%;
         height: 100%;
+        touch-action: none;
+        user-select: none;
+        -webkit-user-select: none;
+        -webkit-touch-callout: none;
       }
       canvas {
         image-rendering: pixelated;
         image-rendering: crisp-edges;
       }
+      #safe-probe {
+        position: fixed;
+        inset: 0;
+        pointer-events: none;
+        padding: env(safe-area-inset-top, 0px) env(safe-area-inset-right, 0px)
+          env(safe-area-inset-bottom, 0px) env(safe-area-inset-left, 0px);
+      }
+      #rotate {
+        display: none;
+        position: fixed;
+        inset: 0;
+        z-index: 20;
+        background: #14110e;
+        color: #f6edd8;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        padding: 32px;
+        font-family: Georgia, "Liberation Serif", serif;
+      }
+      #rotate strong {
+        display: block;
+        color: #f0c14a;
+        font-size: 28px;
+        letter-spacing: 0.08em;
+        margin-bottom: 12px;
+      }
+      @media (orientation: portrait) and (pointer: coarse) {
+        #rotate {
+          display: flex;
+        }
+      }
     </style>
-    <script type="module" crossorigin src="./assets/index-CxO1eRjf.js"></script>
+    <script type="module" crossorigin src="./assets/index-B0AkC47c.js"></script>
   </head>
   <body>
+    <div id="safe-probe"></div>
+    <div id="rotate">
+      <div>
+        <strong>NAUVOO</strong>
+        Turn the phone sideways.<br />
+        The road is meant for two thumbs.
+      </div>
+    </div>
     <div id="game"></div>
+    <script>
+      const markPortrait = () => {
+        const coarse = window.matchMedia("(pointer: coarse)").matches;
+        const portrait = window.matchMedia("(orientation: portrait)").matches;
+        window.__nauvooPortrait = coarse && portrait;
+        const el = document.getElementById("rotate");
+        if (el) el.style.display = window.__nauvooPortrait ? "flex" : "";
+      };
+      window.addEventListener("resize", markPortrait);
+      window.addEventListener("orientationchange", markPortrait);
+      markPortrait();
+      document.getElementById("game")?.addEventListener("contextmenu", (event) => event.preventDefault());
+    </script>
   </body>
 </html>
