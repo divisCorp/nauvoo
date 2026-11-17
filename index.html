@@ -4,6 +4,10 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <meta name="theme-color" content="#14110e" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="Nauvoo" />
     <title>Nauvoo — Spring 1842</title>
     <link rel="manifest" href="./manifest.webmanifest" />
     <link rel="icon" href="./icons/icon-192.png" />
@@ -13,19 +17,64 @@
       body {
         margin: 0;
         height: 100%;
-        background: #14110e;
+        height: 100dvh;
+        background: #3e6a34;
         overflow: hidden;
         overscroll-behavior: none;
         -webkit-tap-highlight-color: transparent;
       }
       #game,
       #game canvas {
+        position: fixed;
+        inset: 0;
         width: 100%;
         height: 100%;
+        height: 100dvh;
         touch-action: none;
         user-select: none;
         -webkit-user-select: none;
         -webkit-touch-callout: none;
+      }
+      #fs,
+      #install {
+        position: fixed;
+        z-index: 16;
+        font-family: Georgia, "Liberation Serif", serif;
+      }
+      #fs {
+        top: max(10px, env(safe-area-inset-top));
+        left: 50%;
+        transform: translateX(-50%);
+        background: #2a1c12;
+        color: #f6edd8;
+        border: 2px solid #c6a15a;
+        border-radius: 999px;
+        padding: 8px 14px;
+        font-size: 14px;
+      }
+      #install {
+        display: none;
+        left: 12px;
+        right: 12px;
+        bottom: max(12px, env(safe-area-inset-bottom));
+        background: rgba(20, 16, 12, 0.94);
+        color: #f6edd8;
+        border: 2px solid #c6a15a;
+        border-radius: 12px;
+        padding: 14px 16px;
+        text-align: center;
+      }
+      #install strong {
+        color: #f0c14a;
+      }
+      #install button {
+        margin-top: 8px;
+        background: #f3e6c4;
+        color: #1a140f;
+        border: 0;
+        border-radius: 8px;
+        padding: 8px 12px;
+        font-family: inherit;
       }
       canvas {
         image-rendering: pixelated;
@@ -64,7 +113,7 @@
         }
       }
     </style>
-    <script type="module" crossorigin src="./assets/index-B0AkC47c.js"></script>
+    <script type="module" crossorigin src="./assets/index-zIDKwarv.js"></script>
   </head>
   <body>
     <div id="safe-probe"></div>
@@ -76,6 +125,13 @@
       </div>
     </div>
     <div id="game"></div>
+    <button id="fs" type="button">Full screen</button>
+    <div id="install">
+      <strong>Full screen on iPhone</strong><br />
+      Tap Share, then Add to Home Screen. Open Nauvoo from the icon and it fills the phone, sideways.
+      <br />
+      <button id="install-ok" type="button">Got it</button>
+    </div>
     <script>
       const markPortrait = () => {
         const coarse = window.matchMedia("(pointer: coarse)").matches;
@@ -88,6 +144,31 @@
       window.addEventListener("orientationchange", markPortrait);
       markPortrait();
       document.getElementById("game")?.addEventListener("contextmenu", (event) => event.preventDefault());
+      const ios = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+      const standalone = window.navigator.standalone === true || window.matchMedia("(display-mode: standalone)").matches;
+      const fsBtn = document.getElementById("fs");
+      const install = document.getElementById("install");
+      const hideFs = () => {
+        if (!fsBtn) return;
+        const active = document.fullscreenElement || standalone || !document.documentElement.requestFullscreen;
+        fsBtn.style.display = active ? "none" : "block";
+      };
+      fsBtn?.addEventListener("click", () => {
+        const root = document.documentElement;
+        root.requestFullscreen?.().then(() => {
+          screen.orientation?.lock?.("landscape").catch(() => undefined);
+          hideFs();
+        }).catch(() => undefined);
+      });
+      document.addEventListener("fullscreenchange", hideFs);
+      hideFs();
+      if (ios && !standalone && !localStorage.getItem("nauvoo-install-hint")) {
+        if (install) install.style.display = "block";
+      }
+      document.getElementById("install-ok")?.addEventListener("click", () => {
+        localStorage.setItem("nauvoo-install-hint", "1");
+        if (install) install.style.display = "none";
+      });
     </script>
   </body>
 </html>
