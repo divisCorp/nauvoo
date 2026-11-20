@@ -31,6 +31,8 @@
         height: 100%;
         height: 100dvh;
         touch-action: none;
+        image-rendering: pixelated;
+        image-rendering: crisp-edges;
         user-select: none;
         -webkit-user-select: none;
         -webkit-touch-callout: none;
@@ -39,18 +41,23 @@
       #install {
         position: fixed;
         z-index: 16;
-        font-family: Georgia, "Liberation Serif", serif;
+        font-family: ui-monospace, monospace;
       }
       #fs {
-        top: max(10px, env(safe-area-inset-top));
-        left: 50%;
-        transform: translateX(-50%);
-        background: #2a1c12;
+        top: auto;
+        left: auto;
+        bottom: max(28px, calc(env(safe-area-inset-bottom) + 22px));
+        right: max(8px, env(safe-area-inset-right));
+        width: 36px;
+        height: 36px;
+        padding: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #1a140f;
         color: #f6edd8;
         border: 2px solid #c6a15a;
-        border-radius: 999px;
-        padding: 8px 14px;
-        font-size: 14px;
+        border-radius: 4px;
       }
       #install {
         display: none;
@@ -113,7 +120,7 @@
         }
       }
     </style>
-    <script type="module" crossorigin src="./assets/index-CT5fzWCY.js"></script>
+    <script type="module" crossorigin src="./assets/index-CXZ_vmGo.js"></script>
   </head>
   <body>
     <div id="safe-probe"></div>
@@ -125,7 +132,7 @@
       </div>
     </div>
     <div id="game"></div>
-    <button id="fs" type="button">Full screen</button>
+    <button id="fs" type="button" aria-label="Full screen"><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path fill="#f6edd8" d="M1 1h5v2H3v3H1zm9 0h5v5h-2V3h-3zM1 10h2v3h3v2H1zm12 3v-3h2v5h-5v-2z"/></svg></button>
     <div id="install">
       <strong>Full screen on iPhone</strong><br />
       Tap Share, then Add to Home Screen. Open Nauvoo from the icon and it fills the phone, sideways.
@@ -136,9 +143,9 @@
       const markPortrait = () => {
         const coarse = window.matchMedia("(pointer: coarse)").matches;
         const portrait = window.matchMedia("(orientation: portrait)").matches;
-        window.__nauvooPortrait = coarse && portrait;
+        window.__nauvooPortrait = false;
         const el = document.getElementById("rotate");
-        if (el) el.style.display = window.__nauvooPortrait ? "flex" : "";
+        if (el) el.style.display = "none";
       };
       window.addEventListener("resize", markPortrait);
       window.addEventListener("orientationchange", markPortrait);
